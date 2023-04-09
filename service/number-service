@@ -1,0 +1,49 @@
+#! /bin/bash
+
+SERVICE_NAME=number_service
+MAIN_FILE=/opt/number-service/main.sh
+NUMBER_FILE=/opt/number-service/data/numbers.txt
+FIZZBUZZ_FILE=/opt/number-service/data/fizzbuzz.txt
+
+start () {
+	echo "Starting $SERVICE_NAME ..."
+	mkdir -p /opt/number-service/data
+	$MAIN_FILE $NUMBER_FILE $FIZZBUZZ_FILE & 
+	echo "FizzBuzz number service started." 	
+}
+getpid () {
+	
+	echo $(ps -ef | grep $MAIN_FILE | grep -v grep | awk '{print $2}')
+}
+stop () {
+	PROC_ID=$(getpid)
+	if [[ $PROC_ID -ne "" ]]; then
+		kill $PROC_ID
+		echo "FizzBuzz number service stop."
+	else
+		echo "FizzBuzz already stopped"
+	fi
+}
+
+status () {
+	PROC_ID=$(getpid)
+	if [[ $PROC_ID -ne "" ]]; then
+		echo "FizzBuzz number service running..."
+	else
+		echo "FizzBuzz number service stop."
+	fi
+}
+
+case $1 in
+start) start
+ ;;
+stop) stop
+;;
+kill) stop
+;;
+status) status
+;;
+esac
+
+
+exit 0
